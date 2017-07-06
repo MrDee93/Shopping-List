@@ -7,16 +7,35 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    var userUID:String?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        configureFirebase()
+        
+        signIntoFirebase()
+        
         return true
+    }
+    
+    func configureFirebase() {
+        FirebaseApp.configure()
+    }
+    func signIntoFirebase() {
+        Auth.auth().signInAnonymously() { (user, error) in
+            if error != nil {
+                print("ERROR: ",error?.localizedDescription)
+            } else {
+                print("Signed in as ", user?.displayName)
+            }
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
