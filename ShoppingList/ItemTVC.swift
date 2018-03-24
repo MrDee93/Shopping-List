@@ -31,9 +31,16 @@ class ItemTVC: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         self.enableRow()
+        
+        textField.returnKeyType = .done
     }
     
+    
     @IBAction func itemCheckedOff(_ sender:UIButton) {
+        if (textField.text?.isEmpty)! {
+            return
+        }
+        
         self.endEditing(true)
         if sender.tag == 0 {
             self.setTicked()

@@ -1,5 +1,5 @@
 //
-//  NewShoppingListVC.swift
+//  ShoppingListVC.swift
 //  ShoppingList
 //
 //  Created by Dayan Yonnatan on 23/06/2017.
@@ -8,55 +8,63 @@
 
 import UIKit
 
-class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UpdateTableDelegate, DatabaseUpdateDelegate {
+class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UpdateTableDelegate, DatabaseUpdateDelegate {
     
     @IBOutlet var tableView:UITableView!
-    var countOfRows:Int = 2
-    var listController:ListController?
-    var currentUser:String?
+    var countOfRows:Int = 2 // To keep extra rows available
+    var listController:ListController? // This controller manages the data fetching and updating
+    var currentID:String? // Current Shopping List ID
+    var arrayOfItems = [Item]() // Array of Items retrieved from the list
+    var existingListID:String? // This is used to send the existing Shopping List ID to this viewcontroller.
     
-    // Firebase
-    var currentID:String?
-    
-    var arrayOfItems = [Item]()
-    
-    var newListOption:Bool?
-    var existingListID:String?
+    var listName:String?
     
     func getShareButton() -> UIBarButtonItem {
         let barbuttonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.action, target: self, action: #selector(shareButtonTapped))
         return barbuttonItem
     }
-    
-    /*let shareButton: UIBarButtonItem = {
-        let barbuttonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.action, target: self, action: #selector(shareButtonTapped()))
-        return barbuttonItem
-    }()*/
-    
-    
-    
+    func setupList() {
+        if existingListID != nil {
+            self.currentID = existingListID
+            // -- TEMP: 21/03/2018
+            /*
+            if listController == nil {
+                print("List controller is nil")
+                listController = ListController()
+                listController?.connectToListWith(id: existingListID!)
+            }*/
+            
+        } else {
+            // -- TEMP: 21/03/2018
+            /*
+            if listController == nil {
+                print("List controller is nil")
+                listController = ListController()
+                if let name = listName {
+                    listController?.createNewList(name: name)
+                }
+            }*/
+            
+            self.currentID = listController?.getListID()
+            
+        }
+        if let name = listName {
+            self.navigationItem.title = name
+        } else {
+            self.navigationItem.title = "List: \(self.currentID!)"
+            print("No name")
+        }
+        if let listid = self.currentID, let listname = listName {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.addListToDB(name: listname, id: listid)
+            print("Added list to DB")
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        if newListOption == nil {
-        newListOption = true
-        }
         
-        if existingListID != nil && newListOption == false {
-            self.currentID = existingListID
-            self.navigationItem.title = "List: \(existingListID!)"
-            
-            if listController == nil {
-            listController = ListController(user: currentUser!)
-            listController?.connectToListWith(id: existingListID!)
-            }
-        } else {
-            if listController == nil {
-                listController = ListController(user: currentUser!)
-                listController?.createNewList()
-            }
-            self.currentID = listController?.getListID()
-            self.navigationItem.title = "List: \(self.currentID!)"
-        }
+        setupList()
+        
         if listController != nil {
             listController?.databaseUpdateDelegate = self
         }
@@ -73,18 +81,30 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
     
     // Delegate method
     func createNewRow() {
-        //self.countOfRows += 1
         self.tableView.reloadData()
     }
     
+    var previousText:String?
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if textField.text?.isEmpty == false {
+            textField.tag = 1
+            previousText = textField.text
+        }
+    }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField.tag == 1 {
-            return
+            if let previousItemName = previousText {
+                listController?.updateItemNameFor(oldItemName: previousItemName, newItemName: textField.text!)
+            }
         }
-        if textField.text != "" || textField.text != " " {
+        else if textField.text != "" || textField.text != " " {
             createItem(name: textField.text!)
             textField.tag = 1
+        }
+        defer {
+            previousText = nil
         }
     }
     func createItem(name:String) {
@@ -94,16 +114,15 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
         self.arrayOfItems.append(newItem)
     }
     
-    
+
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == UITableViewCellEditingStyle.delete {
-            //print("DELETE ATTEMPT!! row ", indexPath.row)
-            self.countOfRows -= 1
-            tableView.deleteRows(at: [indexPath], with: .automatic)
-            
+            let itemName = getItemNameFromIndexpath(indexPath: indexPath)
+            listController?.removeItem(itemName: itemName)
+            tableView.reloadData()
         }
     }
     lazy var inputAccessoryViewOfTextField: UIToolbar? = {
@@ -120,6 +139,10 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
     func handleDone() {
         self.view.endEditing(true)
     }
+    func getItemNameFromIndexpath(indexPath:IndexPath) -> String {
+        let cell = self.tableView.cellForRow(at: indexPath) as! ItemTVC
+        return cell.textField.text!
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ItemTVC
@@ -134,17 +157,14 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
             cell.enableRow()
             cell.textField.placeholder = "Add item"
             cell.textField.autocorrectionType = .no
-            cell.textField.autocapitalizationType = .words
+            cell.textField.autocapitalizationType = .sentences
         }
         
         if indexPath.row < (arrayOfItems.count) {
-            print("Item number ", indexPath.row)
             let item = arrayOfItems[indexPath.row]
-            print("purchase status: ", item.purchased)
             cell.item = item
             cell.textField.text = item.name
             if let purchased = item.purchased {
-                print("Item is ", purchased)
                 if(purchased) {
                     cell.setTicked()
                 } else {
@@ -165,10 +185,10 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
     func updateItem(itemName:String, tickInfo:TickInfo) {
         let indexOfItem = arrayOfItems.index(where: {$0.name == itemName})
         
-        print("Item is index ", indexOfItem)
+        print("Item is index ", indexOfItem as Any)
         
         if indexOfItem != nil {
-            var itemReference = arrayOfItems[indexOfItem!] as Item
+            let itemReference = arrayOfItems[indexOfItem!] as Item
             
             if tickInfo == .Ticked {
                 itemReference.purchased = true
@@ -185,34 +205,39 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
     
     // database update delegate
     func updateListWith(dataArray:[Item]) {
-        //self.view.isUserInteractionEnabled = false
+        self.view.isUserInteractionEnabled = false
+        print("Beginning to update DB")
         
-        //arrayOfItems.removeAll()
         
-        
-        for item in dataArray {
+        DispatchQueue.global(qos: .background).async {
+            self.arrayOfItems.removeAll()
+            self.arrayOfItems = dataArray
             
-            let newitem = Item(name: item.name!, purchased: item.purchased!)
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
             
-            //arrayOfItems.append(newItem)
-            print("Created \(item.name!) with \(item.purchased!)")
         }
-        
-        //self.tableView.reloadData()
-        //self.view.isUserInteractionEnabled = true
-        
+
+        self.view.isUserInteractionEnabled = true
+        print("Completed updating")
+    }
+    func reloadData() {
+        self.tableView.reloadData()
     }
     
     
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //return countOfRows
         return arrayOfItems.count + self.countOfRows
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 55
+    }
+    
     func shareButtonTapped() {
         let shareOptionsController = UIAlertController(title: "Share", message: "Select a Sharing method", preferredStyle: .actionSheet)
         
@@ -220,7 +245,7 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
             self.copyToClipboard()
         }
         let shareMessage = UIAlertAction(title: "Send as Message", style: .default) { (action) in
-            
+            self.sendAsMessage()
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
         
@@ -236,12 +261,24 @@ class NewShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataS
     
     
     func copyToClipboard() {
-        UIPasteboard.general.string = self.currentID
+        //UIPasteboard.general.string = self.currentID
+        guard let currentID = self.currentID else {
+            return
+        }
+        let clipboardString = String("ShoppingListDY://?" + currentID)
+        
+        UIPasteboard.general.string = clipboardString
+        
     }
     
     func sendAsMessage() {
         // not written up yet as too much code.
     }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return true
+    }
+
     
     /*
     // MARK: - Navigation

@@ -9,22 +9,35 @@
 import Foundation
 
 
-class List {
+class List { //}: Codable {
     
     var title:String?
-    var members:[String]? = []
+    //var members:[String]? = []
     var items:[Item]? = []
     
     init(title:String) {
         self.title = title
     }
-    
-    func addMember(id:String) {
-        members?.append(id)
+    /*
+    required init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys)
+        values.
+        
     }
+    func encode(to encoder: Encoder) throws {
+        
+    }*/
+    
+    
     func addItem(item:Item) {
         items?.append(item)
     }
+    
+    /*
+    enum CodingKeys: NSDictionary, String, CodingKey {
+        case title = "title"
+        case items = "
+    }*/
     
     
 }

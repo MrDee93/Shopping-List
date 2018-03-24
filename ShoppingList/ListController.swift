@@ -12,19 +12,26 @@ import Firebase
 
 protocol ShoppingListSearchDelegate:class {
     func foundListWith(dataArray:NSDictionary)
+    func foundEmptyList()
     func unableToFindList()
+    func setListName(name:String)
 }
 
 protocol DatabaseUpdateDelegate:class {
     func updateListWith(dataArray:[Item]) // finish off creating this update system.. worried that it might crash when I clear the 'arrayOfItems' array so figure out a way to quickly replace it before the tableview realises it or just find a way to stop it crashing.. if it does
+    func reloadData()
+}
+enum RunningStatus {
+    case Active
+    case Inactive
 }
 
-
 class ListController {
+    var runningStatus:RunningStatus = .Inactive
     var firstRun:Bool?
     var firebaseRef:DatabaseReference!
     var listID:String?
-    let user:String!
+    //let user:String!
     
     // list
     var listRef:DatabaseReference?
@@ -32,23 +39,24 @@ class ListController {
     
     weak var databaseUpdateDelegate:DatabaseUpdateDelegate?
     
-    init(user:String) {
+    
+    init() {
         self.firebaseRef = Database.database().reference().child("lists")
-        self.user = user
     }
     func getListID() -> String {
         return removeDashFromString(self.listID!)
     }
     
-    func createNewList() {
+    func createNewList(name:String) {
         listRef = firebaseRef.childByAutoId()
         self.listID = listRef?.key
-        //var arrayOfUsers = [String]()
-        //arrayOfUsers.append(self.user)
-        
-        listRef?.child("founder").setValue(user!)
+        listRef?.child("name").setValue(name)
+
+        listenForUpdates()
         
     }
+    
+    
     func removeDashFromString(_ inputstring:String) -> String {
         //let dash = inputstring.substring(to: inputstring.index(after: inputstring.startIndex))
         
@@ -73,9 +81,9 @@ class ListController {
         
     }
     func valueChanged() {
-        if firstRun == false {
+        if firstRun == false && runningStatus == .Inactive {
+            runningStatus = .Active
             print("NEW UPDATE FOUND!!!!!")
-            //databaseUpdateDelegate?.updateListWith(dataArray: downloadData())
             downloadData()
         } else {
             firstRun = false
@@ -85,12 +93,33 @@ class ListController {
     func downloadData(){ //-> [Item] {
         var itemArray = [Item]()
         
-        listRef?.observeSingleEvent(of: .value, with: { (snapshot) in
-            print(snapshot.value)
+        listRef?.child("items").observeSingleEvent(of: .value, with: { (snapshot) in
+            guard let fetchedItems = snapshot.value as? NSDictionary else {
+                self.runningStatus = .Inactive
+                return
+            }
+            
+            
+            for item in fetchedItems {
+                let itemDict = item.value as! NSDictionary
+                print("Item: \(itemDict["name"] as! String) == \(itemDict["purchased"] as! Bool)")
+                
+                itemArray.append(Item(name: itemDict["name"] as! String, purchased: itemDict["purchased"] as! Bool))
+            }
+            
+            if itemArray.count >= 1 {
+                
+                self.sendNewData(data: itemArray)
+            }
+            self.runningStatus = .Inactive
+            //print("\(fetchedItem["name"] as? String) - \(fetchedItem["purchased"] as? Bool)")
         })
-        
-        
     }
+    func sendNewData(data:[Item]) {
+        databaseUpdateDelegate?.updateListWith(dataArray: data)
+    }
+    
+    
     func connectToListWith(id:String) {
         firstRun = true
         let listID = cleanUpString(id)
@@ -98,17 +127,28 @@ class ListController {
         
         firebaseRef.observeSingleEvent(of: .value, with: { (snapshot) in
 
-            //firebaseRef.observe(.value, with: { (snapshot) in
             if let value = snapshot.value as? NSDictionary {
             
             for item in value {
-                //print(item)
                 let listid = item.key as! NSString
-                //print("\(listid) vs \(listID) == ", listid.compare(listID) == ComparisonResult.orderedAscending)
+                if let listName = item.value as? NSDictionary {
+                    if let name = listName.value(forKey: "name") as? String {
+                    self.listSearchDelegate?.setListName(name: name)
+                    }
+                }
                 if listid.compare(listID) == ComparisonResult.orderedSame {
-                    self.foundListIDWith(data: item.value as! NSDictionary)
-                    self.listenForUpdates()
-                    return
+                    print("Found list.. trying to open")
+                    if let itemvalue = item.value as? NSDictionary {
+                        if itemvalue.count <= 1 {
+                            print("No data.. opening either way")
+                            self.listSearchDelegate?.foundEmptyList()
+                            return
+                        } else {
+                            self.foundListIDWith(data: itemvalue)
+                            self.listenForUpdates()
+                            return
+                        }
+                    }
                 }
             }
                 self.unableToFindList()
@@ -143,18 +183,48 @@ class ListController {
         }
     }
     
+    
     func updateItemInfo(item:Item) {
         if listRef != nil {
             
             listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
             print("Changed \(item.name!) to \(item.purchased! ? "purchased" : "not purchased")")
-        } else {
-            print("List ref is nil")
         }
     }
     
+    func updateItemNameFor(oldItemName:String, newItemName:String) {
+        if listRef != nil {
+            getItemDetails(itemName: oldItemName, newItemName: newItemName)
+        }
+    }
+    func getItemDetails(itemName:String, newItemName:String) {
+        listRef?.child("items").child(itemName).observeSingleEvent(of: .value, with: { (snapshot) in
+            let itemDict = snapshot.value as! NSDictionary
+            
+
+            print("Item: \(itemDict["name"] as! String) == \(itemDict["purchased"] as! Bool)")
+            
+            let item = Item(name: newItemName, purchased: itemDict["purchased"] as! Bool)
+            self.removeAndReplaceItemWith(item: item, oldItemName: itemName)
+        })
+    }
+    func removeAndReplaceItemWith(item:Item, oldItemName:String) {
+        if listRef != nil {
+            listRef?.child("items").child(oldItemName).removeValue()
+            listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
+            print("Dispatch async")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { 
+                self.databaseUpdateDelegate?.reloadData()
+                print("Reload")
+            })
+        }
+    }
     
-    
+    func removeItem(itemName:String) {
+        if listRef != nil {
+            listRef?.child("items").child(itemName).removeValue()
+        }
+    }
     
     
     

@@ -8,24 +8,33 @@
 
 /* Begin PBXBuildFile section */
 		6EDE891CCAB740DE437691EC /* Pods_ShoppingList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7923F13755F1BBF3194E3A76 /* Pods_ShoppingList.framework */; };
+		931EE95B206411A900DC4E15 /* ConnectionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EE95A206411A900DC4E15 /* ConnectionChecker.swift */; };
+		931EE96A206559DE00DC4E15 /* ShoppingList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 931EE968206559DE00DC4E15 /* ShoppingList.xcdatamodeld */; };
+		931EE96D20655A6B00DC4E15 /* Lists+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EE96B20655A6B00DC4E15 /* Lists+CoreDataClass.swift */; };
+		931EE96E20655A6B00DC4E15 /* Lists+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EE96C20655A6B00DC4E15 /* Lists+CoreDataProperties.swift */; };
+		931EE97120659E0900DC4E15 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EE97020659E0900DC4E15 /* DatabaseManager.swift */; };
 		9342B2731EFD15F50092C409 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2721EFD15F50092C409 /* AppDelegate.swift */; };
 		9342B2751EFD15F50092C409 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2741EFD15F50092C409 /* HomeViewController.swift */; };
 		9342B2781EFD15F50092C409 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9342B2761EFD15F50092C409 /* Main.storyboard */; };
 		9342B27A1EFD15F50092C409 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9342B2791EFD15F50092C409 /* Assets.xcassets */; };
 		9342B27D1EFD15F50092C409 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9342B27B1EFD15F50092C409 /* LaunchScreen.storyboard */; };
-		9342B2851EFD29650092C409 /* NewShoppingListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2841EFD29650092C409 /* NewShoppingListVC.swift */; };
+		9342B2851EFD29650092C409 /* ShoppingListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2841EFD29650092C409 /* ShoppingListVC.swift */; };
 		9342B2871EFD297B0092C409 /* ExistingShoppingListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2861EFD297B0092C409 /* ExistingShoppingListVC.swift */; };
 		9342B2891EFD2D110092C409 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2881EFD2D110092C409 /* Item.swift */; };
 		9342B28B1F02C4250092C409 /* ItemTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B28A1F02C4250092C409 /* ItemTVC.swift */; };
 		9342B28E1F081F5D0092C409 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9342B28D1F081F5D0092C409 /* GoogleService-Info.plist */; };
 		9342B2901F0820460092C409 /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B28F1F0820460092C409 /* List.swift */; };
 		9342B2921F0C30570092C409 /* ListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2911F0C30570092C409 /* ListController.swift */; };
-		9342B2941F0DC72E0092C409 /* DatabaseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2931F0DC72E0092C409 /* DatabaseController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		35D5167269E34F648DA39338 /* Pods-ShoppingList.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShoppingList.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ShoppingList/Pods-ShoppingList.debug.xcconfig"; sourceTree = "<group>"; };
 		7923F13755F1BBF3194E3A76 /* Pods_ShoppingList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShoppingList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		931EE95A206411A900DC4E15 /* ConnectionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionChecker.swift; sourceTree = "<group>"; };
+		931EE969206559DE00DC4E15 /* ShoppingList.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShoppingList.xcdatamodel; sourceTree = "<group>"; };
+		931EE96B20655A6B00DC4E15 /* Lists+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lists+CoreDataClass.swift"; sourceTree = "<group>"; };
+		931EE96C20655A6B00DC4E15 /* Lists+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lists+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		931EE97020659E0900DC4E15 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		9342B26F1EFD15F50092C409 /* ShoppingList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShoppingList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9342B2721EFD15F50092C409 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9342B2741EFD15F50092C409 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
@@ -33,14 +42,13 @@
 		9342B2791EFD15F50092C409 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9342B27C1EFD15F50092C409 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9342B27E1EFD15F50092C409 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9342B2841EFD29650092C409 /* NewShoppingListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewShoppingListVC.swift; sourceTree = "<group>"; };
+		9342B2841EFD29650092C409 /* ShoppingListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShoppingListVC.swift; sourceTree = "<group>"; };
 		9342B2861EFD297B0092C409 /* ExistingShoppingListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistingShoppingListVC.swift; sourceTree = "<group>"; };
 		9342B2881EFD2D110092C409 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		9342B28A1F02C4250092C409 /* ItemTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemTVC.swift; sourceTree = "<group>"; };
 		9342B28D1F081F5D0092C409 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9342B28F1F0820460092C409 /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		9342B2911F0C30570092C409 /* ListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListController.swift; sourceTree = "<group>"; };
-		9342B2931F0DC72E0092C409 /* DatabaseController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseController.swift; sourceTree = "<group>"; };
 		DB774FA88A8103C038B6A54C /* Pods-ShoppingList.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShoppingList.release.xcconfig"; path = "Pods/Target Support Files/Pods-ShoppingList/Pods-ShoppingList.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -64,6 +72,25 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		931EE95F206556F600DC4E15 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				931EE96B20655A6B00DC4E15 /* Lists+CoreDataClass.swift */,
+				931EE96C20655A6B00DC4E15 /* Lists+CoreDataProperties.swift */,
+				931EE968206559DE00DC4E15 /* ShoppingList.xcdatamodeld */,
+			);
+			name = "Core Data";
+			sourceTree = "<group>";
+		};
+		931EE96F20659DF300DC4E15 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				9342B2911F0C30570092C409 /* ListController.swift */,
+				931EE97020659E0900DC4E15 /* DatabaseManager.swift */,
+			);
+			name = Managers;
+			sourceTree = "<group>";
+		};
 		9342B2661EFD15F50092C409 = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +112,8 @@
 		9342B2711EFD15F50092C409 /* ShoppingList */ = {
 			isa = PBXGroup;
 			children = (
+				931EE96F20659DF300DC4E15 /* Managers */,
+				931EE95F206556F600DC4E15 /* Core Data */,
 				9342B28C1F081E120092C409 /* Views */,
 				9342B2721EFD15F50092C409 /* AppDelegate.swift */,
 				9342B2761EFD15F50092C409 /* Main.storyboard */,
@@ -94,8 +123,7 @@
 				9342B28D1F081F5D0092C409 /* GoogleService-Info.plist */,
 				9342B2881EFD2D110092C409 /* Item.swift */,
 				9342B28F1F0820460092C409 /* List.swift */,
-				9342B2911F0C30570092C409 /* ListController.swift */,
-				9342B2931F0DC72E0092C409 /* DatabaseController.swift */,
+				931EE95A206411A900DC4E15 /* ConnectionChecker.swift */,
 			);
 			path = ShoppingList;
 			sourceTree = "<group>";
@@ -104,7 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				9342B2741EFD15F50092C409 /* HomeViewController.swift */,
-				9342B2841EFD29650092C409 /* NewShoppingListVC.swift */,
+				9342B2841EFD29650092C409 /* ShoppingListVC.swift */,
 				9342B2861EFD297B0092C409 /* ExistingShoppingListVC.swift */,
 				9342B28A1F02C4250092C409 /* ItemTVC.swift */,
 			);
@@ -245,15 +273,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				931EE95B206411A900DC4E15 /* ConnectionChecker.swift in Sources */,
 				9342B28B1F02C4250092C409 /* ItemTVC.swift in Sources */,
+				931EE97120659E0900DC4E15 /* DatabaseManager.swift in Sources */,
 				9342B2891EFD2D110092C409 /* Item.swift in Sources */,
+				931EE96A206559DE00DC4E15 /* ShoppingList.xcdatamodeld in Sources */,
 				9342B2901F0820460092C409 /* List.swift in Sources */,
 				9342B2751EFD15F50092C409 /* HomeViewController.swift in Sources */,
 				9342B2921F0C30570092C409 /* ListController.swift in Sources */,
-				9342B2941F0DC72E0092C409 /* DatabaseController.swift in Sources */,
-				9342B2851EFD29650092C409 /* NewShoppingListVC.swift in Sources */,
+				9342B2851EFD29650092C409 /* ShoppingListVC.swift in Sources */,
 				9342B2731EFD15F50092C409 /* AppDelegate.swift in Sources */,
+				931EE96D20655A6B00DC4E15 /* Lists+CoreDataClass.swift in Sources */,
 				9342B2871EFD297B0092C409 /* ExistingShoppingListVC.swift in Sources */,
+				931EE96E20655A6B00DC4E15 /* Lists+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +456,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		931EE968206559DE00DC4E15 /* ShoppingList.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				931EE969206559DE00DC4E15 /* ShoppingList.xcdatamodel */,
+			);
+			currentVersion = 931EE969206559DE00DC4E15 /* ShoppingList.xcdatamodel */;
+			path = ShoppingList.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 9342B2671EFD15F50092C409 /* Project object */;
 }

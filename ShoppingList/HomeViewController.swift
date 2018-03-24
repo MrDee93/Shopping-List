@@ -7,127 +7,220 @@
 //
 
 import UIKit
+import CoreData
 
-class HomeViewController: UIViewController, ShoppingListSearchDelegate {
 
-    @IBOutlet var displayNameTextField:UITextField!
+class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableViewDelegate, UITableViewDataSource {
+
     
-    var existingListViewController:NewShoppingListVC?
+    @IBOutlet var tableView:UITableView!
+    var shoppingListVC:ShoppingListVC?
+    var fetchedResultsController:NSFetchedResultsController<NSFetchRequestResult>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        setupBackgroundTap()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(checkForDirectLink), name: NSNotification.Name.init("OpenLink"), object: nil)
+        
+        setupAndPerformFetch()
+        self.navigationItem.rightBarButtonItem = createAddListButton()
     }
+    
+    func checkForDirectLink() {
+        if UserDefaults.standard.bool(forKey: "DirectLinkBool") == true {
+            if let linkid = UserDefaults.standard.string(forKey: "DirectLink") {
+                self.openListWith(id: linkid)
+            }
+        }
+    }
+    
+   
     override func viewDidAppear(_ animated: Bool) {
-        if existingListViewController != nil {
-            existingListViewController = nil
+        
+        if shoppingListVC != nil {
+            shoppingListVC = nil
         }
-        print("View did appear")
+        setupAndPerformFetch()
+        self.tableView.reloadData()
     }
     
-    @IBAction func createNewList() {
-        existingListViewController = self.storyboard?.instantiateViewController(withIdentifier: "NewShoppingListVC") as? NewShoppingListVC
-        existingListViewController?.existingListID = nil
-        existingListViewController?.newListOption = true
-        existingListViewController?.currentUser = self.displayNameTextField.text
+    
+    
+    func setupAndPerformFetch() {
+        let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Lists")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateOpened", ascending: false)]
         
-        existingListViewController?.listController = ListController(user: self.displayNameTextField.text!)
-        existingListViewController?.listController?.createNewList()
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: appDelegate.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: "Lists")
+        do {
+        try fetchedResultsController?.performFetch()
+        } catch {
+            print("Error fetching for fetchedResultsController")
+        }
         
-        self.navigationController?.pushViewController(existingListViewController!, animated: true)
     }
     
-    @IBAction func openExistingList() {
-        if self.displayNameTextField.text == "" || self.displayNameTextField.text == " " {
-            let alertController = UIAlertController(title: "ERROR", message: "Please enter a display name before continuing", preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "Dismiss", style: .destructive, handler: nil))
-            self.present(alertController, animated: true, completion: nil)
-        } else {
+    // Table View
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let fetchedObject = fetchedResultsController?.fetchedObjects![indexPath.row] as? Lists {
+            guard let listid = fetchedObject.id else {
+                return
+            }
+            self.openListWith(id: listid)
+        }
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 75
+    }
+    func getDateFormatter() -> DateFormatter {
+        let dateFormat = DateFormatter.init()
+        dateFormat.dateFormat = "HH:mm dd/MM/yyyy"
+        return dateFormat
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "recentCellID", for: indexPath)
+        
+        if let fetchedObject = fetchedResultsController?.fetchedObjects![indexPath.row] as? Lists {
+            cell.textLabel?.text = fetchedObject.name
+            if let timeIntervalDateOpened = fetchedObject.dateOpened as? Double {
+                let fetchedDate = Date.init(timeIntervalSince1970: timeIntervalDateOpened)
+                cell.detailTextLabel?.text = "Last opened: " + getDateFormatter().string(from: fetchedDate)
+            }
+        }
+        
+        return cell
+    }
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Recents:"
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let rows = fetchedResultsController?.fetchedObjects?.count else {
+            return 0
+        }
+        return rows
+    }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    
+   
+    
+    
+    @objc func createOrOpenList() {
+        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Create a new list", style: .default, handler: { (action) in
+            self.createNewList()
+        }))
+        alert.addAction(UIAlertAction(title: "Open an existing list by ID", style: .default, handler: { (action) in
+            self.openExistingList()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func createAddListButton() -> UIBarButtonItem {
+        return UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(createOrOpenList))
+    }
+    
+    func createNewListWithName(name:String) {
+        shoppingListVC = self.storyboard?.instantiateViewController(withIdentifier: "ShoppingListVC") as? ShoppingListVC
+        shoppingListVC?.existingListID = nil
+        shoppingListVC?.listName = name
+        shoppingListVC?.listController = ListController()
+        shoppingListVC?.listController?.createNewList(name: name)
+        self.navigationController?.pushViewController(shoppingListVC!, animated: true)
+    }
+    func createNewList() {
+        let alert = UIAlertController(title: "Name", message: "Give a name for your list", preferredStyle: .alert)
+        alert.addTextField { (textfield) in
+            textfield.autocapitalizationType = .sentences
+        }
+        alert.addAction(UIAlertAction(title: "Continue", style: .destructive, handler: { (action) in
+            //let textField = alert.textFields?.last as! UITextField
+            if alert.textFields?.last?.text != nil || alert.textFields?.last?.text != "" {
+                self.createNewListWithName(name: (alert.textFields?.last?.text)!)
+            }
+        }))
+        self.present(alert, animated: true, completion: nil)
+        
+    }
+    
+    
+    func openExistingList() {
         let alertController = UIAlertController(title: "Open an existing List", message: "Enter list ID", preferredStyle: .alert)
-        alertController.addTextField { (textfield) in
-            
-        }
-        
+        alertController.addTextField(configurationHandler: nil)
         alertController.addAction(UIAlertAction(title: "Open", style: .default, handler: { (action) in
             if let listID = alertController.textFields?.last?.text {
-            if listID != "" || listID != " " {
-                self.openListWith(id: listID)
-            }
+                if listID != "" || listID != " " {
+                    self.openListWith(id: listID)
+                }
             }
         }))
         alertController.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
         self.present(alertController, animated: true, completion: nil)
-        }
     }
+
     
+    // To open an existing Shopping List
     func openListWith(id:String) {
-        print("Opening list ", id)
-        
-        existingListViewController = self.storyboard?.instantiateViewController(withIdentifier: "NewShoppingListVC") as? NewShoppingListVC
-        existingListViewController?.existingListID = id
-        existingListViewController?.newListOption = false
-        existingListViewController?.currentUser = self.displayNameTextField.text
-        
-        existingListViewController?.listController = ListController(user: self.displayNameTextField.text!)
-        existingListViewController?.listController?.connectToListWith(id: id)
-        existingListViewController?.listController?.listSearchDelegate = self
-        
-        
+        shoppingListVC = self.storyboard?.instantiateViewController(withIdentifier: "ShoppingListVC") as? ShoppingListVC
+        shoppingListVC?.existingListID = id
+        shoppingListVC?.listController = ListController()
+        shoppingListVC?.listController?.connectToListWith(id: id)
+        shoppingListVC?.listController?.listSearchDelegate = self
     }
     
+    
+    // Delegate method called when Shopping List with the same ID is found. Retrieve data and send to viewcontroller
     func foundListWith(dataArray: NSDictionary) {
-        // first create array of data
-        var arrayOfItems = [Item]()
+        if dataArray.count <= 0 {
+            print("No data.")
+            return
+        }
+        print("Found list with array \(dataArray.count)!")
         
         for item in dataArray {
             let theitem = item.value as! NSDictionary
             let purchased = theitem["purchased"] as! Bool
             let itemName = item.key as! String
             
-            print("Item: \(itemName) purchased:\((purchased) ? "true" : "false")")
+            //print("Item: \(itemName) purchased:\((purchased) ? "true" : "false")")
             let newItem = self.createNewItemWith(name: itemName, purchased: purchased)
-            existingListViewController?.arrayOfItems.append(newItem)
-            
+            shoppingListVC?.arrayOfItems.append(newItem)
         }
-        
-        self.navigationController?.pushViewController(existingListViewController!, animated: true)
-        print("Count of items ", existingListViewController?.arrayOfItems.count)
+        self.navigationController?.pushViewController(shoppingListVC!, animated: true)
     }
-    func createNewItemWith(name:String, purchased:Bool) -> Item {
-        let item = Item(name: name, purchased: purchased)
-        return item
+    // Found empty list
+    func foundEmptyList() {
+        self.navigationController?.pushViewController(shoppingListVC!, animated: true)
     }
     
+    // Delegate method to set shopping list name
+    func setListName(name:String) {
+        shoppingListVC?.listName = name
+    }
+    
+    
+    // Delegate method called when Shopping List with matching ID is not found.
     func unableToFindList() {
         let alertController = UIAlertController(title: "Unable to find list", message: "Unable to find the list..\nMake sure you copy and paste the ID exactly as it is", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Dismiss", style: .destructive, handler: nil))
         self.present(alertController, animated: true, completion: nil)
     }
     
-    
-    
-    func setupBackgroundTap() {
-        let backgroundTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(endEditing))
-        self.view.addGestureRecognizer(backgroundTapRecognizer)
+    // To create a new Item object
+    func createNewItemWith(name:String, purchased:Bool) -> Item {
+        let item = Item(name: name, purchased: purchased)
+        return item
     }
-
-    func endEditing() {
-        self.view.endEditing(true)
-    }
+    
+   
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "newListSegue" {
-            if displayNameTextField.text == "" {
-                (segue.destination as! NewShoppingListVC).currentUser = "Anon"
-            } else {
-                (segue.destination as! NewShoppingListVC).currentUser = self.displayNameTextField.text
-            }
-        }
-    }
+    
 }
 
