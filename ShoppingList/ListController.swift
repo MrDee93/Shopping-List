@@ -58,8 +58,6 @@ class ListController {
     
     
     func removeDashFromString(_ inputstring:String) -> String {
-        //let dash = inputstring.substring(to: inputstring.index(after: inputstring.startIndex))
-        
         return inputstring.substring(from: inputstring.index(after: inputstring.startIndex))
 
     }
@@ -75,7 +73,7 @@ class ListController {
         }
     }
     func listenForUpdates() {
-        firebaseRef.observe(.value, with: { (snapshot) in
+        firebaseRef.observe(.childAdded, with: { (snapshot) in
             self.valueChanged()
         })
         
@@ -179,7 +177,7 @@ class ListController {
         if listRef != nil {
             
             listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
-            print("Added item!")
+            print("Added item: \(item.name!)!")
         }
     }
     
@@ -199,13 +197,14 @@ class ListController {
     }
     func getItemDetails(itemName:String, newItemName:String) {
         listRef?.child("items").child(itemName).observeSingleEvent(of: .value, with: { (snapshot) in
-            let itemDict = snapshot.value as! NSDictionary
             
-
+            if let itemDict = snapshot.value as? NSDictionary {
+                
             print("Item: \(itemDict["name"] as! String) == \(itemDict["purchased"] as! Bool)")
             
             let item = Item(name: newItemName, purchased: itemDict["purchased"] as! Bool)
             self.removeAndReplaceItemWith(item: item, oldItemName: itemName)
+            }
         })
     }
     func removeAndReplaceItemWith(item:Item, oldItemName:String) {

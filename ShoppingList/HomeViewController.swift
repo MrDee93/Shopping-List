@@ -17,6 +17,7 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
     var shoppingListVC:ShoppingListVC?
     var fetchedResultsController:NSFetchedResultsController<NSFetchRequestResult>?
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -26,17 +27,19 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
         self.navigationItem.rightBarButtonItem = createAddListButton()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.init("OpenLink"), object: nil)
+    }
     func checkForDirectLink() {
-        if UserDefaults.standard.bool(forKey: "DirectLinkBool") == true {
-            if let linkid = UserDefaults.standard.string(forKey: "DirectLink") {
-                self.openListWith(id: linkid)
-            }
+        if let linkid = UserDefaults.standard.string(forKey: "DirectLink") {
+            setupAndPerformFetch()
+            self.openListWith(id: linkid)
+            UserDefaults.standard.set(nil, forKey: "DirectLink")
         }
     }
     
    
     override func viewDidAppear(_ animated: Bool) {
-        
         if shoppingListVC != nil {
             shoppingListVC = nil
         }
@@ -61,6 +64,13 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
     }
     
     // Table View
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Delete List from Recents
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let fetchedObject = fetchedResultsController?.fetchedObjects![indexPath.row] as? Lists {
             guard let listid = fetchedObject.id else {
@@ -80,34 +90,43 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "recentCellID", for: indexPath)
         
-        if let fetchedObject = fetchedResultsController?.fetchedObjects![indexPath.row] as? Lists {
-            cell.textLabel?.text = fetchedObject.name
-            if let timeIntervalDateOpened = fetchedObject.dateOpened as? Double {
-                let fetchedDate = Date.init(timeIntervalSince1970: timeIntervalDateOpened)
-                cell.detailTextLabel?.text = "Last opened: " + getDateFormatter().string(from: fetchedDate)
-            }
+        if fetchedResultsController?.fetchedObjects?.count == 0 {
+            cell.textLabel?.text = "No recently opened lists. Tap \'+\' on top-right corner to create/open a list."
+            cell.textLabel?.numberOfLines = 2
+            cell.detailTextLabel?.text = nil
+            cell.isUserInteractionEnabled = false
+            return cell
         }
         
+        if let fetchedObject = fetchedResultsController?.fetchedObjects![indexPath.row] as? Lists {
+            cell.isUserInteractionEnabled = true
+            cell.textLabel?.text = fetchedObject.name
+            
+            //if fetchedObject.dateOpened != nil {
+            let fetchedDate = Date.init(timeIntervalSince1970: fetchedObject.dateOpened)
+            cell.detailTextLabel?.text = "Last opened: " + getDateFormatter().string(from: fetchedDate)
+           // }
+        }
         return cell
     }
+    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return "Recents:"
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let rows = fetchedResultsController?.fetchedObjects?.count else {
-            return 0
+        let rows = (fetchedResultsController?.fetchedObjects?.count)!
+        
+        if rows == 0 {
+            return 1
+        } else {
+            return rows
         }
-        return rows
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    
-   
-    
-    
-    @objc func createOrOpenList() {
+    @objc func createOrOpenList(_ sender:UIBarButtonItem) {
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Create a new list", style: .default, handler: { (action) in
             self.createNewList()
@@ -116,6 +135,9 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
             self.openExistingList()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        alert.popoverPresentationController?.barButtonItem = sender
+        
         self.present(alert, animated: true, completion: nil)
     }
     
@@ -137,7 +159,6 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
             textfield.autocapitalizationType = .sentences
         }
         alert.addAction(UIAlertAction(title: "Continue", style: .destructive, handler: { (action) in
-            //let textField = alert.textFields?.last as! UITextField
             if alert.textFields?.last?.text != nil || alert.textFields?.last?.text != "" {
                 self.createNewListWithName(name: (alert.textFields?.last?.text)!)
             }

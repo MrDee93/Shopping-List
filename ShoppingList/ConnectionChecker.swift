@@ -106,7 +106,7 @@ class ConnectionChecker {
                 self.setOnline()
             } else {
                 self.noConnectionTimer = Timer.scheduledTimer(timeInterval: 2.5, target: self, selector: #selector(self.showNoConnectionError), userInfo: nil, repeats: false)
-                self.disableUserInteraction()
+                //self.disableUserInteraction()
             }
         })
     }
@@ -126,11 +126,11 @@ class ConnectionChecker {
                         self.checkConnectionOnce()
                         print("Checking connection again.")
                     } else {
-                        self.disableUserInteraction()
+                        //self.disableUserInteraction()
                         self.noConnectionTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.showNoConnectionError), userInfo: nil, repeats: false)
                     } }
             } else {
-                self.disableUserInteraction()
+                //self.disableUserInteraction()
                 self.noConnectionTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.showNoConnectionError), userInfo: nil, repeats: false)
             } })
     }

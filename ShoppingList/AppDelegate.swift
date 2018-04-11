@@ -73,15 +73,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let id = url.query {
             //print("Scheme: ", url.scheme)
             //print("query: ", url.query)
-            
-            directLink = id
-            UserDefaults.standard.set(true, forKey: "DirectLinkBool")
+
             UserDefaults.standard.set(id, forKey: "DirectLink")
-            NotificationCenter.default.post(name: NSNotification.Name.init("OpenLink"), object: nil)
+            self.perform(#selector(openLink), with: nil, afterDelay: 0.3)
         }
         return true
     }
-    
+    func openLink() {
+        NotificationCenter.default.post(name: NSNotification.Name.init("OpenLink"), object: nil)
+    }
     
     // MARK: - Core Data stack
     func addListToDB(name:String, id:String) {

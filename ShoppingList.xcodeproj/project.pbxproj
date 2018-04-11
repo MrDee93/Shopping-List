@@ -19,12 +19,12 @@
 		9342B27A1EFD15F50092C409 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9342B2791EFD15F50092C409 /* Assets.xcassets */; };
 		9342B27D1EFD15F50092C409 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9342B27B1EFD15F50092C409 /* LaunchScreen.storyboard */; };
 		9342B2851EFD29650092C409 /* ShoppingListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2841EFD29650092C409 /* ShoppingListVC.swift */; };
-		9342B2871EFD297B0092C409 /* ExistingShoppingListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2861EFD297B0092C409 /* ExistingShoppingListVC.swift */; };
 		9342B2891EFD2D110092C409 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2881EFD2D110092C409 /* Item.swift */; };
 		9342B28B1F02C4250092C409 /* ItemTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B28A1F02C4250092C409 /* ItemTVC.swift */; };
 		9342B28E1F081F5D0092C409 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9342B28D1F081F5D0092C409 /* GoogleService-Info.plist */; };
 		9342B2901F0820460092C409 /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B28F1F0820460092C409 /* List.swift */; };
 		9342B2921F0C30570092C409 /* ListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9342B2911F0C30570092C409 /* ListController.swift */; };
+		93B56AF52066FDA1006B00BA /* Messaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93B56AF42066FDA1006B00BA /* Messaging.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,12 +43,12 @@
 		9342B27C1EFD15F50092C409 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9342B27E1EFD15F50092C409 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9342B2841EFD29650092C409 /* ShoppingListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShoppingListVC.swift; sourceTree = "<group>"; };
-		9342B2861EFD297B0092C409 /* ExistingShoppingListVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExistingShoppingListVC.swift; sourceTree = "<group>"; };
 		9342B2881EFD2D110092C409 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		9342B28A1F02C4250092C409 /* ItemTVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemTVC.swift; sourceTree = "<group>"; };
 		9342B28D1F081F5D0092C409 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9342B28F1F0820460092C409 /* List.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		9342B2911F0C30570092C409 /* ListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListController.swift; sourceTree = "<group>"; };
+		93B56AF42066FDA1006B00BA /* Messaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messaging.swift; sourceTree = "<group>"; };
 		DB774FA88A8103C038B6A54C /* Pods-ShoppingList.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShoppingList.release.xcconfig"; path = "Pods/Target Support Files/Pods-ShoppingList/Pods-ShoppingList.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -124,6 +124,7 @@
 				9342B2881EFD2D110092C409 /* Item.swift */,
 				9342B28F1F0820460092C409 /* List.swift */,
 				931EE95A206411A900DC4E15 /* ConnectionChecker.swift */,
+				93B56AF42066FDA1006B00BA /* Messaging.swift */,
 			);
 			path = ShoppingList;
 			sourceTree = "<group>";
@@ -133,7 +134,6 @@
 			children = (
 				9342B2741EFD15F50092C409 /* HomeViewController.swift */,
 				9342B2841EFD29650092C409 /* ShoppingListVC.swift */,
-				9342B2861EFD297B0092C409 /* ExistingShoppingListVC.swift */,
 				9342B28A1F02C4250092C409 /* ItemTVC.swift */,
 			);
 			name = Views;
@@ -281,10 +281,10 @@
 				9342B2901F0820460092C409 /* List.swift in Sources */,
 				9342B2751EFD15F50092C409 /* HomeViewController.swift in Sources */,
 				9342B2921F0C30570092C409 /* ListController.swift in Sources */,
+				93B56AF52066FDA1006B00BA /* Messaging.swift in Sources */,
 				9342B2851EFD29650092C409 /* ShoppingListVC.swift in Sources */,
 				9342B2731EFD15F50092C409 /* AppDelegate.swift in Sources */,
 				931EE96D20655A6B00DC4E15 /* Lists+CoreDataClass.swift in Sources */,
-				9342B2871EFD297B0092C409 /* ExistingShoppingListVC.swift in Sources */,
 				931EE96E20655A6B00DC4E15 /* Lists+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
