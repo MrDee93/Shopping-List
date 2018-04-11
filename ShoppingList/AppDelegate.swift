@@ -87,61 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func addListToDB(name:String, id:String) {
         databaseManager.searchThenAddToDB(name: name, id: id)
     }
-    /*
-    func confirmedAddNewListToDB(name:String, id:String) {
-         self.persistentContainer.viewContext.perform({
-         let newList:Lists = NSEntityDescription.insertNewObject(forEntityName: "Lists", into: self.persistentContainer.viewContext) as! Lists
-         newList.name = name
-         newList.id = id
-         let dateopened = Date.init()
-         newList.dateOpened = dateopened.timeIntervalSince1970
-         self.saveContext()
-         })
-    }
-    func searchListInDB(name:String, id:String) {
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Lists")
-        
-        do {
-            let objects = try self.persistentContainer.viewContext.fetch(fetchRequest) as! [Lists]
-            for object in objects {
-                if object.id == id {
-                    let currentDate = Date.init()
-                    object.dateOpened = currentDate.timeIntervalSince1970
-                    self.saveContext()
-                    print("EDITED DATE")
-                    return
-                }
-            }
-            self.confirmedAddNewListToDB(name: name, id: id)
-        }
-        catch {
-            print("Error searching DB")
-            return
-        }
-    }
-    
-    
-    func clearDatabase() {
-        var fetchedData:[Lists]
-        
-        do {
-            fetchedData = try self.persistentContainer.viewContext.fetch(Lists.fetchRequest())
-            
-        } catch {
-            print("Error clearing Users from DB")
-            return
-        }
-        
-        
-        for(_, element) in fetchedData.enumerated() {
-            DispatchQueue.main.async {
-                self.persistentContainer.viewContext.delete(element)
-            }
-        }
-        DispatchQueue.main.async {
-            self.saveContext()
-        }
-    }*/
     
     lazy var persistentContainer: NSPersistentContainer = {
         /*

@@ -19,14 +19,39 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var listName:String?
     
-    @IBAction func clearAllButton() {
-        for item in arrayOfItems {
-            print(item.name)
+    func sortList() {
+        arrayOfItems.sort{ (firstItem, nextItem) -> Bool in
+            if firstItem.purchased == true {
+                return false
+            } else if nextItem.purchased == true {
+                return true
+            }
+            return true
         }
+        self.reloadData()
     }
     
-    @IBAction func deleteListButton() {
-        print(arrayOfItems.count)
+    
+    func confirmedClearAll() {
+        for item in arrayOfItems {
+            if let itemname = item.name {
+                listController?.removeItem(itemName: itemname)
+            }
+        }
+        arrayOfItems.removeAll()
+        self.reloadData()
+    }
+    @IBAction func clearAllButton() {
+       let alert = UIAlertController(title: "Confirm Deletion", message: "Are you sure you want to clear all items from this shopping list?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { (action) in
+            self.confirmedClearAll()
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    @IBAction func sortListButton() {
+        sortList()
     }
     
     
@@ -44,12 +69,10 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.navigationItem.title = name
         } else {
             self.navigationItem.title = "List: \(self.currentID!)"
-            print("No name")
         }
         if let listid = self.currentID, let listname = listName {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.addListToDB(name: listname, id: listid)
-            print("Added list to DB")
         }
     }
     override func viewDidLoad() {
@@ -60,29 +83,42 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         if listController != nil {
             listController?.databaseUpdateDelegate = self
         }
-        print("Count of array of items ",self.arrayOfItems.count)
-        // REFRESH DATA AFTER CHANGING A CELL INFO... MAYBE USE DEFAULTCENTER POST NOTIFICATION TO UPDATE AND CREATE NEW ROW
 
         self.navigationItem.rightBarButtonItem = self.getShareButton()
+        
     }
-
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        addTableViewInsets()
+    }
+    func addTableViewInsets() {
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: 250, right: 0)
+        self.tableView.contentInset = insets
+    }
+   
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    // Delegate method
-    func createNewRow() {
-        self.tableView.reloadData()
-    }
     
     var previousText:String?
     
+    func scrollToItem(name:String) {
+        if let index = arrayOfItems.index(where: {$0.name == name}) {
+            self.tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+        }
+    }
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField.text?.isEmpty == false {
             textField.tag = 1
             previousText = textField.text
+            scrollToItem(name: textField.text!)
         } else {
+            if arrayOfItems.count > 1 {
+                self.tableView.scrollToRow(at: IndexPath(row: arrayOfItems.count-1, section: 0), at: .middle, animated: true)
+            }
             textField.tag = 0
         }
     }
@@ -96,6 +132,9 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         if textField.tag == 1 {
             if let previousItemName = previousText {
+                if let indexOfItem = arrayOfItems.index(where: {$0.name == previousItemName}) {
+                    arrayOfItems[indexOfItem].name = textField.text
+                }
                 listController?.updateItemNameFor(oldItemName: previousItemName, newItemName: textField.text!)
             }
         }
@@ -108,23 +147,27 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     func createItem(name:String) {
+        if arrayOfItems.index(where: {$0.name == name}) != nil {
+            print("ERROR: Item already exists..")
+            let alert = UIAlertController(title: "Duplicate item", message: "Item already exists in the list", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .destructive, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        } else {
         let newItem = Item(name: name, purchased: false)
         
         listController?.addItem(item: newItem)
         self.arrayOfItems.append(newItem)
-        self.createNewRow()
+        self.reloadData()
+        }
     }
     
     func findAndRemoveItem(itemName:String) {
-        var index = 0
-        for item in arrayOfItems {
-            
-            if item.name?.compare(itemName) == ComparisonResult.orderedSame {
-                arrayOfItems.remove(at: index)
-                print("Removed item at index: ", index)
-            }
-            index = index + 1
+        guard let indexOfItem = arrayOfItems.index(where: {$0.name == itemName}) else {
+            print("Error: Unable to find item to remove")
+            return
         }
+        
+        arrayOfItems.remove(at: indexOfItem)
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
@@ -136,7 +179,6 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             listController?.removeItem(itemName: itemName)
             findAndRemoveItem(itemName: itemName)
             tableView.deleteRows(at: [indexPath], with: .automatic)
-            
         }
     }
     lazy var inputAccessoryViewOfTextField: UIToolbar? = {
@@ -152,6 +194,7 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     }()
     func handleDone() {
         self.view.endEditing(true)
+        self.reloadData()
     }
     func getItemNameFromIndexpath(indexPath:IndexPath) -> String {
         let cell = self.tableView.cellForRow(at: indexPath) as! ItemTVC
@@ -161,23 +204,13 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ItemTVC
         
+        cell.setUnticked()
         cell.textField.text = nil
         cell.delegate = self
         cell.textField.delegate = self
         cell.textField.inputAccessoryView = self.inputAccessoryViewOfTextField
-        cell.enableRow()
         
-        /*
-        if(indexPath.row == (arrayOfItems.count + self.countOfRows) - 1) {
-            cell.disableRow()
-        } else {
-            cell.enableRow()
-            cell.textField.placeholder = "Add item"
-            cell.textField.autocorrectionType = .no
-            cell.textField.autocapitalizationType = .sentences
-        }*/
         if (indexPath.row == (arrayOfItems.count + self.countOfRows) - 1) {
-            cell.enableRow()
             cell.textField.placeholder = "Add item"
             cell.textField.autocorrectionType = .no
             cell.textField.autocapitalizationType = .sentences
@@ -203,14 +236,11 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         if itemName == " " || itemName == "" {
             return
         }
-        print("Tick info changed for ", itemName)
         updateItem(itemName: itemName, tickInfo: tickInfo)
     }
     func updateItem(itemName:String, tickInfo:TickInfo) {
         let indexOfItem = arrayOfItems.index(where: {$0.name == itemName})
-        
-        print("Item is index ", indexOfItem as Any)
-        
+
         if indexOfItem != nil {
             let itemReference = arrayOfItems[indexOfItem!] as Item
             
@@ -219,8 +249,7 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             } else {
                 itemReference.purchased = false
             }
-            print("Item ref: ", itemReference.name!)
-            
+
             listController?.updateItemInfo(item: itemReference)
         }
         
@@ -239,7 +268,6 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
-            
         }
 
         self.view.isUserInteractionEnabled = true
@@ -267,12 +295,16 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         let copyClipboard = UIAlertAction(title: "Copy Shopping ID to Clipboard", style: .default) { (action) in
             self.copyToClipboard()
         }
+        let sendAsText = UIAlertAction(title: "Send shopping list in written format", style: .default) { (action) in
+            self.sendAsText()
+        }
         let shareMessage = UIAlertAction(title: "Send as Message", style: .default) { (action) in
             self.sendAsMessage()
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
         
         shareOptionsController.addAction(copyClipboard)
+        shareOptionsController.addAction(sendAsText)
         shareOptionsController.addAction(shareMessage)
         shareOptionsController.addAction(cancelAction)
 
@@ -305,9 +337,33 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.sendMessageWithID(listLink!)
     }
+    func sendAsText() {
+        var stringOfItems = String.init()
+        var count = 0
+        for item in arrayOfItems {
+            if count == 0 {
+                stringOfItems.append(getStringOfItem(item: item))
+            } else {
+                stringOfItems.append("\n\(getStringOfItem(item: item))")
+            }
+            count = count + 1
+        }
+        self.sendMessageWithText(stringOfItems)
+        
+    }
+    func getStringOfItem(item:Item) -> String {
+        guard let itemname = item.name else {
+            return ""
+        }
+        if item.purchased == true {
+            return "(X) \(itemname)"
+        } else {
+            return "( ) \(itemname)"
+        }
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.view.endEditing(true)
+        self.handleDone()
         return true
     }
 

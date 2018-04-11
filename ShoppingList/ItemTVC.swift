@@ -14,7 +14,6 @@ enum TickInfo {
 }
 
 protocol UpdateTableDelegate:class {
-    func createNewRow()
     func changeTickInfo(tickInfo:TickInfo,_ itemName:String)
 }
 
@@ -22,7 +21,6 @@ class ItemTVC: UITableViewCell {
     var item:Item?
     
     @IBOutlet var textField:UITextField!
-    @IBOutlet var insertRowButton:UIButton!
     @IBOutlet var checkBoxButton:UIButton!
     
     weak var delegate:UpdateTableDelegate?
@@ -30,7 +28,8 @@ class ItemTVC: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        self.enableRow()
+        self.checkBoxButton.isHidden = false
+        self.textField.isHidden = false
 
         textField.returnKeyType = .done
     }
@@ -59,29 +58,15 @@ class ItemTVC: UITableViewCell {
         self.checkBoxButton.setImage(UIImage(named:"unticked"), for: .normal)
         self.checkBoxButton.tag = 0
     }
-    
+    /*
     @IBAction func enableRowPressed(_ sender:Any) {
-        self.enableRow()
+        //self.enableRow()
         if let delegate = self.delegate {
             delegate.createNewRow()
         }
     }
-    
-    
-    func disableRow() {
-        self.insertRowButton.isHidden = false
-        self.insertRowButton.isEnabled = true
-        
-        self.checkBoxButton.isHidden = true
-        self.textField.isHidden = true
-    }
-    func enableRow() {
-        self.insertRowButton.isHidden = true
-        self.insertRowButton.isEnabled = false
-        self.checkBoxButton.isHidden = false
-        self.textField.isHidden = false
-    }
-    
+    */
+   
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

@@ -44,7 +44,6 @@ class DatabaseManager {
                     let currentDate = Date.init()
                     object.dateOpened = currentDate.timeIntervalSince1970
                     appDelegate.saveContext()
-                    print("EDITED DATE")
                     return
                 }
             }

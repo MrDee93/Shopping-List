@@ -20,11 +20,22 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigationBar()
         
         NotificationCenter.default.addObserver(self, selector: #selector(checkForDirectLink), name: NSNotification.Name.init("OpenLink"), object: nil)
         
         setupAndPerformFetch()
         self.navigationItem.rightBarButtonItem = createAddListButton()
+        
+    }
+    func setupNavigationBar() {
+        //self.navigationController?.navigationBar.barTintColor = UIColor.getCustomGreen()
+        self.navigationController?.navigationBar.tintColor = UIColor.getCustomGreen()
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.getCustomGreen()]
+        
+        
+        //self.navigationController?.navigationBar.backgroundColor = UIColor.blue
+        
     }
     
     deinit {
@@ -68,6 +79,7 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete List from Recents
+            // FIXME: FINISH
         }
     }
     

@@ -105,13 +105,13 @@ class ConnectionChecker {
                 self.enableUserInteraction()
                 self.setOnline()
             } else {
-                self.noConnectionTimer = Timer.scheduledTimer(timeInterval: 2.5, target: self, selector: #selector(self.showNoConnectionError), userInfo: nil, repeats: false)
+                self.noConnectionTimer = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(self.checkConnectionOnce), userInfo: nil, repeats: false)
                 //self.disableUserInteraction()
             }
         })
     }
     
-    func checkConnectionOnce() {
+    @objc func checkConnectionOnce() {
         let connectedReference = Database.database().reference(withPath: ".info/connected")
         connectedReference.observeSingleEvent(of: .value, with: { (snapshot) in
             if let connected = snapshot.value as? Bool {

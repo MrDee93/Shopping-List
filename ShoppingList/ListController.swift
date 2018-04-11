@@ -73,15 +73,14 @@ class ListController {
         }
     }
     func listenForUpdates() {
-        firebaseRef.observe(.childAdded, with: { (snapshot) in
+        firebaseRef.observe(.value, with: { (snapshot) in
             self.valueChanged()
         })
-        
     }
+    
     func valueChanged() {
         if firstRun == false && runningStatus == .Inactive {
             runningStatus = .Active
-            print("NEW UPDATE FOUND!!!!!")
             downloadData()
         } else {
             firstRun = false
@@ -175,7 +174,7 @@ class ListController {
     }
     func addItem(item:Item) {
         if listRef != nil {
-            
+
             listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
             print("Added item: \(item.name!)!")
         }
@@ -184,9 +183,7 @@ class ListController {
     
     func updateItemInfo(item:Item) {
         if listRef != nil {
-            
             listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
-            print("Changed \(item.name!) to \(item.purchased! ? "purchased" : "not purchased")")
         }
     }
     

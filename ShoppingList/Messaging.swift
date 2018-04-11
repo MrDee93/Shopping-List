@@ -10,6 +10,12 @@ import UIKit
 import MessageUI
 
 extension ShoppingListVC: MFMessageComposeViewControllerDelegate {
+    func getMessageComposeVCText(_ txt:String) -> MFMessageComposeViewController {
+        let messageComposeVC = MFMessageComposeViewController()
+        messageComposeVC.messageComposeDelegate = self
+        messageComposeVC.body = txt
+        return messageComposeVC
+    }
     
     func getMessageComposeVC(_ id:String) -> MFMessageComposeViewController {
         let messageComposeVC = MFMessageComposeViewController()
@@ -24,6 +30,9 @@ extension ShoppingListVC: MFMessageComposeViewControllerDelegate {
     
     func sendMessageWithID(_ id:String) {
         self.present(getMessageComposeVC(id), animated: true, completion: nil)
+    }
+    func sendMessageWithText(_ text:String) {
+        self.present(getMessageComposeVCText(text), animated: true, completion: nil)
     }
     
 }
