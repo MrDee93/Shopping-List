@@ -18,7 +18,8 @@ protocol ShoppingListSearchDelegate:class {
 }
 
 protocol DatabaseUpdateDelegate:class {
-    func updateListWith(dataArray:[Item]) // finish off creating this update system.. worried that it might crash when I clear the 'arrayOfItems' array so figure out a way to quickly replace it before the tableview realises it or just find a way to stop it crashing.. if it does
+    func updateListWith(dataArray:[Item])
+    func updateListWithEmptyData()
     func reloadData()
 }
 enum RunningStatus {
@@ -27,18 +28,16 @@ enum RunningStatus {
 }
 
 class ListController {
-    var runningStatus:RunningStatus = .Inactive
-    var firstRun:Bool?
-    var firebaseRef:DatabaseReference!
+    private var runningStatus:RunningStatus = .Inactive
+    private var firstRun:Bool?
+    private var firebaseRef:DatabaseReference!
     var listID:String?
-    //let user:String!
     
-    // list
-    var listRef:DatabaseReference?
-    weak var listSearchDelegate:ShoppingListSearchDelegate?
     
-    weak var databaseUpdateDelegate:DatabaseUpdateDelegate?
-    
+    private var listRef:DatabaseReference?
+     weak var listSearchDelegate:ShoppingListSearchDelegate?
+     weak var databaseUpdateDelegate:DatabaseUpdateDelegate?
+    private var downloadDataTimer:Timer?
     
     init() {
         self.firebaseRef = Database.database().reference().child("lists")
@@ -58,13 +57,19 @@ class ListController {
     
     
     func removeDashFromString(_ inputstring:String) -> String {
-        return inputstring.substring(from: inputstring.index(after: inputstring.startIndex))
+        let startIndex = inputstring.index(after: inputstring.startIndex)
+        return String(inputstring[startIndex...])
+        
+        //return inputstring.substring(from: inputstring.index(after: inputstring.startIndex))
 
     }
     func cleanUpString(_ inputstring:String) -> String {
         let newString = inputstring.replacingOccurrences(of: " ", with: "")
         
-        let firstChar = newString.substring(to: inputstring.index(after: inputstring.startIndex))
+        //let firstChar = newString.substring(to: inputstring.index(after: inputstring.startIndex))
+        let firstIndex = newString.index(after: inputstring.startIndex)
+        
+        let firstChar = newString[..<firstIndex]
        
         if firstChar == "-" {
             return newString
@@ -73,25 +78,34 @@ class ListController {
         }
     }
     func listenForUpdates() {
-        firebaseRef.observe(.value, with: { (snapshot) in
+        listRef?.observe(.value, with: { (snapshot) in
             self.valueChanged()
         })
     }
-    
+    func setTimer() {
+        self.downloadDataTimer = Timer(timeInterval: 0.8, target: self, selector: #selector(downloadData), userInfo: nil, repeats: false)
+    }
     func valueChanged() {
+        if runningStatus == .Active {
+            setTimer()
+        }
         if firstRun == false && runningStatus == .Inactive {
             runningStatus = .Active
-            downloadData()
+            DispatchQueue.global(qos: .userInteractive).async {
+                self.downloadData()
+            }
+            //downloadData()
         } else {
             firstRun = false
         }
     }
     
-    func downloadData(){ //-> [Item] {
+    @objc func downloadData(){ //-> [Item] {
         var itemArray = [Item]()
         
         listRef?.child("items").observeSingleEvent(of: .value, with: { (snapshot) in
             guard let fetchedItems = snapshot.value as? NSDictionary else {
+                self.databaseUpdateDelegate?.updateListWithEmptyData()
                 self.runningStatus = .Inactive
                 return
             }
@@ -99,7 +113,7 @@ class ListController {
             
             for item in fetchedItems {
                 let itemDict = item.value as! NSDictionary
-                print("Item: \(itemDict["name"] as! String) == \(itemDict["purchased"] as! Bool)")
+                //print("Item: \(itemDict["name"] as! String) == \(itemDict["purchased"] as! Bool)")
                 
                 itemArray.append(Item(name: itemDict["name"] as! String, purchased: itemDict["purchased"] as! Bool))
             }
@@ -108,8 +122,10 @@ class ListController {
                 
                 self.sendNewData(data: itemArray)
             }
+            if itemArray.count == 0 {
+                print("No data in list")
+            }
             self.runningStatus = .Inactive
-            //print("\(fetchedItem["name"] as? String) - \(fetchedItem["purchased"] as? Bool)")
         })
     }
     func sendNewData(data:[Item]) {
@@ -139,6 +155,7 @@ class ListController {
                         if itemvalue.count <= 1 {
                             print("No data.. opening either way")
                             self.listSearchDelegate?.foundEmptyList()
+                            self.listenForUpdates()
                             return
                         } else {
                             self.foundListIDWith(data: itemvalue)
@@ -174,9 +191,7 @@ class ListController {
     }
     func addItem(item:Item) {
         if listRef != nil {
-
             listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
-            print("Added item: \(item.name!)!")
         }
     }
     
@@ -197,7 +212,7 @@ class ListController {
             
             if let itemDict = snapshot.value as? NSDictionary {
                 
-            print("Item: \(itemDict["name"] as! String) == \(itemDict["purchased"] as! Bool)")
+            //print("Item: \(itemDict["name"] as! String) == \(itemDict["purchased"] as! Bool)")
             
             let item = Item(name: newItemName, purchased: itemDict["purchased"] as! Bool)
             self.removeAndReplaceItemWith(item: item, oldItemName: itemName)
@@ -208,10 +223,10 @@ class ListController {
         if listRef != nil {
             listRef?.child("items").child(oldItemName).removeValue()
             listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
-            print("Dispatch async")
+            //print("Dispatch async")
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { 
                 self.databaseUpdateDelegate?.reloadData()
-                print("Reload")
+                //print("Reload")
             })
         }
     }

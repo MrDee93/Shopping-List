@@ -11,10 +11,9 @@ import UIKit
 class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UpdateTableDelegate, DatabaseUpdateDelegate {
     
     @IBOutlet var tableView:UITableView!
-    var countOfRows:Int = 1 // To keep extra rows available
     var listController:ListController? // This controller manages the data fetching and updating
     var currentID:String? // Current Shopping List ID
-    var arrayOfItems = [Item]() // Array of Items retrieved from the list
+     var arrayOfItems = [Item]() // Array of Items retrieved from the list
     var existingListID:String? // This is used to send the existing Shopping List ID to this viewcontroller.
     
     var listName:String?
@@ -192,7 +191,7 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         return toolbarDone
     }()
-    func handleDone() {
+    @objc func handleDone() {
         self.view.endEditing(true)
         self.reloadData()
     }
@@ -204,13 +203,12 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ItemTVC
         
-        cell.setUnticked()
-        cell.textField.text = nil
+
         cell.delegate = self
         cell.textField.delegate = self
         cell.textField.inputAccessoryView = self.inputAccessoryViewOfTextField
         
-        if (indexPath.row == (arrayOfItems.count + self.countOfRows) - 1) {
+        if (indexPath.row == arrayOfItems.count) {
             cell.textField.placeholder = "Add item"
             cell.textField.autocorrectionType = .no
             cell.textField.autocapitalizationType = .sentences
@@ -257,21 +255,27 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     // database update delegate
+    func updateListWithEmptyData() {
+        DispatchQueue.global(qos: .background).sync {
+            self.arrayOfItems.removeAll()
+        }
+        self.reloadData()
+    }
     func updateListWith(dataArray:[Item]) {
-        self.view.isUserInteractionEnabled = false
-        print("Beginning to update DB")
-        
-        DispatchQueue.global(qos: .background).async {
+        //self.view.isUserInteractionEnabled = false
+        //print("Beginning to update DB")
+
+        DispatchQueue.global(qos: .userInteractive).async {
             self.arrayOfItems.removeAll()
             self.arrayOfItems = dataArray
-            
+            /*
             DispatchQueue.main.async {
                 self.tableView.reloadData()
-            }
+            }*/
         }
 
-        self.view.isUserInteractionEnabled = true
-        print("Completed updating")
+        //self.view.isUserInteractionEnabled = true
+        //print("Completed updating")
     }
     func reloadData() {
         self.tableView.reloadData()
@@ -279,7 +283,7 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return arrayOfItems.count + self.countOfRows
+        return arrayOfItems.count + 1
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -289,13 +293,13 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         return 55
     }
     
-    func shareButtonTapped(_ sender:UIBarButtonItem) {
+    @objc func shareButtonTapped(_ sender:UIBarButtonItem) {
         let shareOptionsController = UIAlertController(title: "Share", message: "Select a Sharing method", preferredStyle: .actionSheet)
         
-        let copyClipboard = UIAlertAction(title: "Copy Shopping ID to Clipboard", style: .default) { (action) in
+        let copyClipboard = UIAlertAction(title: "Copy List ID to Clipboard", style: .default) { (action) in
             self.copyToClipboard()
         }
-        let sendAsText = UIAlertAction(title: "Send shopping list in written format", style: .default) { (action) in
+        let sendAsText = UIAlertAction(title: "Send list in text format", style: .default) { (action) in
             self.sendAsText()
         }
         let shareMessage = UIAlertAction(title: "Send as Message", style: .default) { (action) in
@@ -309,10 +313,7 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         shareOptionsController.addAction(cancelAction)
 
         shareOptionsController.popoverPresentationController?.barButtonItem = sender
-        self.present(shareOptionsController, animated: true) { 
-            // When done....
-        }
-        print("Displaying options..")
+        self.present(shareOptionsController, animated: true, completion: nil)
     }
     
     
@@ -332,10 +333,9 @@ class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         guard let currentID = self.currentID else {
             return
         }
-
         let listLink = String("ShoppingListDY://?" + currentID)
+        self.sendMessageWithID(listLink)
         
-        self.sendMessageWithID(listLink!)
     }
     func sendAsText() {
         var stringOfItems = String.init()

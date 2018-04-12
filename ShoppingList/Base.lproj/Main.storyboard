@@ -6,6 +6,8 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -85,9 +87,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lXI-ae-35A">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lXI-ae-35A">
                                 <rect key="frame" x="0.0" y="28" width="375" height="595"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="9Ms-fE-6Oj" customClass="ItemTVC" customModule="ShoppingList" customModuleProvider="target">
@@ -97,22 +98,32 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wXv-dq-lEr">
-                                                    <rect key="frame" x="67" y="5" width="300" height="30"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <nil key="textColor"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                </textField>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cyr-tX-9Dk">
-                                                    <rect key="frame" x="8" y="7" width="31" height="31"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cyr-tX-9Dk">
+                                                    <rect key="frame" x="8" y="6" width="31" height="31"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" secondItem="Cyr-tX-9Dk" secondAttribute="height" multiplier="1:1" id="Slm-0A-UZ5"/>
+                                                    </constraints>
                                                     <state key="normal" image="unticked"/>
                                                     <connections>
                                                         <action selector="itemCheckedOff:" destination="9Ms-fE-6Oj" eventType="touchUpInside" id="H9M-KG-5Le"/>
                                                     </connections>
                                                 </button>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wXv-dq-lEr">
+                                                    <rect key="frame" x="47" y="-17" width="318" height="77"/>
+                                                    <nil key="textColor"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
                                             </subviews>
+                                            <constraints>
+                                                <constraint firstItem="wXv-dq-lEr" firstAttribute="top" secondItem="veF-3t-Pyl" secondAttribute="topMargin" constant="-28" id="0lN-JO-qeH"/>
+                                                <constraint firstItem="wXv-dq-lEr" firstAttribute="centerY" secondItem="Cyr-tX-9Dk" secondAttribute="centerY" id="1dH-bi-EJX"/>
+                                                <constraint firstAttribute="bottom" secondItem="Cyr-tX-9Dk" secondAttribute="bottom" constant="6.5" id="Jrd-xk-ORW"/>
+                                                <constraint firstItem="Cyr-tX-9Dk" firstAttribute="top" secondItem="veF-3t-Pyl" secondAttribute="top" constant="6" id="UJB-Tl-CW3"/>
+                                                <constraint firstItem="Cyr-tX-9Dk" firstAttribute="leading" secondItem="veF-3t-Pyl" secondAttribute="leading" constant="8" id="iBy-zB-Uqn"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="wXv-dq-lEr" secondAttribute="trailing" constant="-5" id="l9c-Wc-wVV"/>
+                                                <constraint firstItem="wXv-dq-lEr" firstAttribute="leading" secondItem="Cyr-tX-9Dk" secondAttribute="trailing" constant="8" symbolic="YES" id="ndl-zr-txr"/>
+                                            </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="checkBoxButton" destination="Cyr-tX-9Dk" id="Sca-cy-d21"/>
@@ -125,9 +136,8 @@
                                     <outlet property="delegate" destination="D17-aT-eLX" id="FA6-TI-Dac"/>
                                 </connections>
                             </tableView>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wVC-YR-VOj">
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wVC-YR-VOj">
                                 <rect key="frame" x="0.0" y="623" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <items>
                                     <barButtonItem title="Clear all items" id="RJz-zL-8ZY">
                                         <color key="tintColor" red="0.0" green="0.70196078431372544" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -136,7 +146,7 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="Kjw-xZ-ZWR"/>
-                                    <barButtonItem title="Sort list" id="OEb-EJ-SPK">
+                                    <barButtonItem title="Sort List" id="OEb-EJ-SPK">
                                         <color key="tintColor" red="0.0" green="0.70196078431372544" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <connections>
                                             <action selector="sortListButton" destination="D17-aT-eLX" id="VsQ-vv-gtE"/>
@@ -146,6 +156,15 @@
                             </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="lXI-ae-35A" secondAttribute="trailing" id="1kp-ix-Ykz"/>
+                            <constraint firstItem="lXI-ae-35A" firstAttribute="leading" secondItem="Hg6-Io-fSg" secondAttribute="leading" id="DGB-yG-TAc"/>
+                            <constraint firstItem="wVC-YR-VOj" firstAttribute="bottom" secondItem="ah3-nN-wGJ" secondAttribute="top" id="G9b-8Z-myR"/>
+                            <constraint firstItem="lXI-ae-35A" firstAttribute="leading" secondItem="wVC-YR-VOj" secondAttribute="leading" id="YZf-rc-ppk"/>
+                            <constraint firstItem="lXI-ae-35A" firstAttribute="trailing" secondItem="wVC-YR-VOj" secondAttribute="trailing" id="e0d-Qn-wCy"/>
+                            <constraint firstItem="wVC-YR-VOj" firstAttribute="top" secondItem="lXI-ae-35A" secondAttribute="bottom" id="t4k-F5-VEk"/>
+                            <constraint firstItem="lXI-ae-35A" firstAttribute="top" secondItem="kbN-yn-snL" secondAttribute="bottom" constant="8" symbolic="YES" id="wfh-iG-sx1"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="tableView" destination="lXI-ae-35A" id="F2T-SL-3Zr"/>

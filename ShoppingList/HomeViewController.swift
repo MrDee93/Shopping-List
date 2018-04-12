@@ -10,38 +10,33 @@ import UIKit
 import CoreData
 
 
-class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableViewDelegate, UITableViewDataSource {
+class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate {
 
     
     @IBOutlet var tableView:UITableView!
     var shoppingListVC:ShoppingListVC?
     var fetchedResultsController:NSFetchedResultsController<NSFetchRequestResult>?
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         
+        
         NotificationCenter.default.addObserver(self, selector: #selector(checkForDirectLink), name: NSNotification.Name.init("OpenLink"), object: nil)
+        
         
         setupAndPerformFetch()
         self.navigationItem.rightBarButtonItem = createAddListButton()
-        
     }
     func setupNavigationBar() {
-        //self.navigationController?.navigationBar.barTintColor = UIColor.getCustomGreen()
         self.navigationController?.navigationBar.tintColor = UIColor.getCustomGreen()
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.getCustomGreen()]
-        
-        
-        //self.navigationController?.navigationBar.backgroundColor = UIColor.blue
-        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.getCustomGreen()]
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.init("OpenLink"), object: nil)
     }
-    func checkForDirectLink() {
+    @objc func checkForDirectLink() {
         if let linkid = UserDefaults.standard.string(forKey: "DirectLink") {
             setupAndPerformFetch()
             self.openListWith(id: linkid)
@@ -49,7 +44,7 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
         }
     }
     
-   
+    
     override func viewDidAppear(_ animated: Bool) {
         if shoppingListVC != nil {
             shoppingListVC = nil
@@ -58,30 +53,63 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
         self.tableView.reloadData()
     }
     
-    
-    
     func setupAndPerformFetch() {
         let appDelegate:AppDelegate = UIApplication.shared.delegate as! AppDelegate
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Lists")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "dateOpened", ascending: false)]
         
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: appDelegate.persistentContainer.viewContext, sectionNameKeyPath: nil, cacheName: "Lists")
+        fetchedResultsController?.delegate = self
         do {
         try fetchedResultsController?.performFetch()
         } catch {
             print("Error fetching for fetchedResultsController")
         }
-        
+    }
+    func performFetch() {
+        do {
+            try fetchedResultsController?.performFetch()
+        }
+        catch {
+            print("ERROR")
+        }
+    }
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        self.tableView.beginUpdates()
+    }
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        self.tableView.endUpdates()
+    }
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch (type) {
+            case .delete:
+                self.tableView.reloadData()
+                break
+            case .insert:
+                break
+            case .move:
+                break
+            case .update:
+                break
+        }
     }
     
     // Table View
-    
+
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete List from Recents
-            // FIXME: FINISH
+            let object = fetchedResultsController?.object(at: indexPath)
+            fetchedResultsController?.managedObjectContext.delete(object as! NSManagedObject)
+            do {
+                try fetchedResultsController?.managedObjectContext.save()
+            }
+            catch {
+                print("Error")
+            }
+            
         }
     }
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let fetchedObject = fetchedResultsController?.fetchedObjects![indexPath.row] as? Lists {

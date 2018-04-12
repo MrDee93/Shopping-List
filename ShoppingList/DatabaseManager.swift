@@ -34,6 +34,7 @@ class DatabaseManager {
             self.appDelegate.saveContext()
         })
     }
+   
     func searchListInDB(name:String, id:String) {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Lists")
         
@@ -51,7 +52,6 @@ class DatabaseManager {
         }
         catch {
             print("Error searching DB")
-            return
         }
     }
     

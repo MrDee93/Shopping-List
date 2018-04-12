@@ -38,7 +38,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func signIntoFirebase() {
         Auth.auth().signInAnonymously() { (user, error) in
             if error != nil {
-                print("ERROR: ",error?.localizedDescription)
+                guard let errorString = error?.localizedDescription else {
+                return
+                }
+                print("ERROR: ",errorString)
             } 
         }
     }
@@ -79,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         return true
     }
-    func openLink() {
+    @objc func openLink() {
         NotificationCenter.default.post(name: NSNotification.Name.init("OpenLink"), object: nil)
     }
     

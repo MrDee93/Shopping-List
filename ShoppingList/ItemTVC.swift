@@ -58,16 +58,12 @@ class ItemTVC: UITableViewCell {
         self.checkBoxButton.setImage(UIImage(named:"unticked"), for: .normal)
         self.checkBoxButton.tag = 0
     }
-    /*
-    @IBAction func enableRowPressed(_ sender:Any) {
-        //self.enableRow()
-        if let delegate = self.delegate {
-            delegate.createNewRow()
-        }
-    }
-    */
+    
    
-
+    override func prepareForReuse() {
+        setUnticked()
+        self.textField.text = nil
+    }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
