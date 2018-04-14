@@ -37,7 +37,7 @@
 		931EE96B20655A6B00DC4E15 /* Lists+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lists+CoreDataClass.swift"; sourceTree = "<group>"; };
 		931EE96C20655A6B00DC4E15 /* Lists+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lists+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		931EE97020659E0900DC4E15 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
-		9342B26F1EFD15F50092C409 /* ShoppingList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShoppingList.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9342B26F1EFD15F50092C409 /* Shopping List - Live.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Shopping List - Live.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9342B2721EFD15F50092C409 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9342B2741EFD15F50092C409 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		9342B2771EFD15F50092C409 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -114,7 +114,7 @@
 		9342B2701EFD15F50092C409 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9342B26F1EFD15F50092C409 /* ShoppingList.app */,
+				9342B26F1EFD15F50092C409 /* Shopping List - Live.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -162,9 +162,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9342B26E1EFD15F50092C409 /* ShoppingList */ = {
+		9342B26E1EFD15F50092C409 /* Shopping List */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9342B2811EFD15F50092C409 /* Build configuration list for PBXNativeTarget "ShoppingList" */;
+			buildConfigurationList = 9342B2811EFD15F50092C409 /* Build configuration list for PBXNativeTarget "Shopping List" */;
 			buildPhases = (
 				464C727B76B62DDA867B3649 /* [CP] Check Pods Manifest.lock */,
 				9342B26B1EFD15F50092C409 /* Sources */,
@@ -177,9 +177,9 @@
 			);
 			dependencies = (
 			);
-			name = ShoppingList;
+			name = "Shopping List";
 			productName = ShoppingList;
-			productReference = 9342B26F1EFD15F50092C409 /* ShoppingList.app */;
+			productReference = 9342B26F1EFD15F50092C409 /* Shopping List - Live.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -200,7 +200,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 9342B26A1EFD15F50092C409 /* Build configuration list for PBXProject "ShoppingList" */;
+			buildConfigurationList = 9342B26A1EFD15F50092C409 /* Build configuration list for PBXProject "Shopping List" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -213,7 +213,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9342B26E1EFD15F50092C409 /* ShoppingList */,
+				9342B26E1EFD15F50092C409 /* Shopping List */,
 			);
 		};
 /* End PBXProject section */
@@ -373,12 +373,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -426,7 +426,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -445,7 +445,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.DayanYonnatan.ShoppingList;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Shopping List - Live";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 			};
@@ -461,7 +462,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.DayanYonnatan.ShoppingList;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Shopping List - Live";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 			};
@@ -470,7 +472,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9342B26A1EFD15F50092C409 /* Build configuration list for PBXProject "ShoppingList" */ = {
+		9342B26A1EFD15F50092C409 /* Build configuration list for PBXProject "Shopping List" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9342B27F1EFD15F50092C409 /* Debug */,
@@ -479,7 +481,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9342B2811EFD15F50092C409 /* Build configuration list for PBXNativeTarget "ShoppingList" */ = {
+		9342B2811EFD15F50092C409 /* Build configuration list for PBXNativeTarget "Shopping List" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				9342B2821EFD15F50092C409 /* Debug */,

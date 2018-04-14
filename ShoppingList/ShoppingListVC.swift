@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UpdateTableDelegate, DatabaseUpdateDelegate {
+final class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UpdateTableDelegate, DatabaseUpdateDelegate {
     
     @IBOutlet var tableView:UITableView!
     var listController:ListController? // This controller manages the data fetching and updating

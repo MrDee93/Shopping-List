@@ -17,7 +17,7 @@ protocol UpdateTableDelegate:class {
     func changeTickInfo(tickInfo:TickInfo,_ itemName:String)
 }
 
-class ItemTVC: UITableViewCell {
+final class ItemTVC: UITableViewCell {
     var item:Item?
     
     @IBOutlet var textField:UITextField!

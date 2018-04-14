@@ -27,7 +27,7 @@ enum RunningStatus {
     case Inactive
 }
 
-class ListController {
+final class ListController {
     private var runningStatus:RunningStatus = .Inactive
     private var firstRun:Bool?
     private var firebaseRef:DatabaseReference!

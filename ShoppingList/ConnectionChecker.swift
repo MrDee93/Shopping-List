@@ -10,7 +10,7 @@ import UIKit
 import FirebaseDatabase
 import FirebaseAuth
 
-class ConnectionChecker {
+final class ConnectionChecker {
     
     var alertController:UIAlertController?
     var noConnectionTimer:Timer?

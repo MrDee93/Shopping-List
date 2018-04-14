@@ -9,9 +9,9 @@
 import UIKit
 import CoreData
 
-class DatabaseManager {
+final class DatabaseManager {
     
-    var appDelegate:AppDelegate!
+    private var appDelegate:AppDelegate!
     
     init(appdelegate:AppDelegate) {
         appDelegate = appdelegate

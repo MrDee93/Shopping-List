@@ -10,12 +10,12 @@ import UIKit
 import CoreData
 
 
-class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate {
+final class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate {
 
     
     @IBOutlet var tableView:UITableView!
     var shoppingListVC:ShoppingListVC?
-    var fetchedResultsController:NSFetchedResultsController<NSFetchRequestResult>?
+    private var fetchedResultsController:NSFetchedResultsController<NSFetchRequestResult>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,9 +83,14 @@ class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableV
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch (type) {
             case .delete:
-                self.tableView.reloadData()
+                if (controller.fetchedObjects?.count)! <= 1 {
+                    self.tableView.reloadData()
+                } else {
+                    self.tableView.deleteRows(at: [indexPath!], with: .automatic)
+                }
                 break
             case .insert:
+                self.tableView.insertRows(at: [newIndexPath!], with: .automatic)
                 break
             case .move:
                 break
