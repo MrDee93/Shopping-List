@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		6EDE891CCAB740DE437691EC /* Pods_ShoppingList.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7923F13755F1BBF3194E3A76 /* Pods_ShoppingList.framework */; };
 		93015CCD207E5461005B6CA6 /* Colour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93015CCC207E5461005B6CA6 /* Colour.swift */; };
+		93015CCF20839CAB005B6CA6 /* TextFieldAdjustingSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93015CCE20839CAB005B6CA6 /* TextFieldAdjustingSize.swift */; };
 		931EE95B206411A900DC4E15 /* ConnectionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EE95A206411A900DC4E15 /* ConnectionChecker.swift */; };
 		931EE96A206559DE00DC4E15 /* ShoppingList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 931EE968206559DE00DC4E15 /* ShoppingList.xcdatamodeld */; };
 		931EE96D20655A6B00DC4E15 /* Lists+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 931EE96B20655A6B00DC4E15 /* Lists+CoreDataClass.swift */; };
@@ -32,6 +33,7 @@
 		35D5167269E34F648DA39338 /* Pods-ShoppingList.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ShoppingList.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ShoppingList/Pods-ShoppingList.debug.xcconfig"; sourceTree = "<group>"; };
 		7923F13755F1BBF3194E3A76 /* Pods_ShoppingList.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ShoppingList.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		93015CCC207E5461005B6CA6 /* Colour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colour.swift; sourceTree = "<group>"; };
+		93015CCE20839CAB005B6CA6 /* TextFieldAdjustingSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldAdjustingSize.swift; sourceTree = "<group>"; };
 		931EE95A206411A900DC4E15 /* ConnectionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionChecker.swift; sourceTree = "<group>"; };
 		931EE969206559DE00DC4E15 /* ShoppingList.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ShoppingList.xcdatamodel; sourceTree = "<group>"; };
 		931EE96B20655A6B00DC4E15 /* Lists+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lists+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				9342B28F1F0820460092C409 /* List.swift */,
 				931EE95A206411A900DC4E15 /* ConnectionChecker.swift */,
 				93B56AF42066FDA1006B00BA /* Messaging.swift */,
+				93015CCE20839CAB005B6CA6 /* TextFieldAdjustingSize.swift */,
 			);
 			path = ShoppingList;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 				93B56AF52066FDA1006B00BA /* Messaging.swift in Sources */,
 				9342B2851EFD29650092C409 /* ShoppingListVC.swift in Sources */,
 				9342B2731EFD15F50092C409 /* AppDelegate.swift in Sources */,
+				93015CCF20839CAB005B6CA6 /* TextFieldAdjustingSize.swift in Sources */,
 				931EE96D20655A6B00DC4E15 /* Lists+CoreDataClass.swift in Sources */,
 				931EE96E20655A6B00DC4E15 /* Lists+CoreDataProperties.swift in Sources */,
 			);

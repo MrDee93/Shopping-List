@@ -21,6 +21,7 @@ final class ItemTVC: UITableViewCell {
     var item:Item?
     
     @IBOutlet var textField:UITextField!
+    
     @IBOutlet var checkBoxButton:UIButton!
     
     weak var delegate:UpdateTableDelegate?
@@ -31,10 +32,18 @@ final class ItemTVC: UITableViewCell {
         self.checkBoxButton.isHidden = false
         self.textField.isHidden = false
 
-        textField.returnKeyType = .done
+
+        setupTextField()
     }
     
-    
+    func setupTextField() {
+        self.textField.adjustsFontSizeToFitWidth = true
+        self.textField.minimumFontSize = 9
+        self.textField.placeholder = "Add item"
+        self.textField.autocorrectionType = .no
+        self.textField.autocapitalizationType = .sentences
+        self.textField.returnKeyType = .done
+    }
     
     @IBAction func itemCheckedOff(_ sender:UIButton) {
         if (textField.text?.isEmpty)! {

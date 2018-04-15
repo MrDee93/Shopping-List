@@ -124,7 +124,7 @@ final class ConnectionChecker {
                     if self.checkConnectionCount == 0 {
                         self.checkConnectionCount += 1
                         self.checkConnectionOnce()
-                        print("Checking connection again.")
+                        //print("Checking connection again.")
                     } else {
                         //self.disableUserInteraction()
                         self.noConnectionTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.showNoConnectionError), userInfo: nil, repeats: false)

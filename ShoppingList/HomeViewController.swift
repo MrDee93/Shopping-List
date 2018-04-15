@@ -12,6 +12,7 @@ import CoreData
 
 final class HomeViewController: UIViewController, ShoppingListSearchDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate {
 
+    var refreshControl:UIRefreshControl!
     
     @IBOutlet var tableView:UITableView!
     var shoppingListVC:ShoppingListVC?
@@ -20,7 +21,9 @@ final class HomeViewController: UIViewController, ShoppingListSearchDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        
+        refreshControl = UIRefreshControl()
+        self.tableView.addSubview(refreshControl)
+        refreshControl.addTarget(self, action: #selector(refreshView), for: UIControlEvents.valueChanged)
         
         NotificationCenter.default.addObserver(self, selector: #selector(checkForDirectLink), name: NSNotification.Name.init("OpenLink"), object: nil)
         
@@ -28,6 +31,13 @@ final class HomeViewController: UIViewController, ShoppingListSearchDelegate, UI
         setupAndPerformFetch()
         self.navigationItem.rightBarButtonItem = createAddListButton()
     }
+    
+    
+    @objc func refreshView() {
+        self.tableView.reloadData()
+        refreshControl.endRefreshing()
+    }
+    
     func setupNavigationBar() {
         self.navigationController?.navigationBar.tintColor = UIColor.getCustomGreen()
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.getCustomGreen()]
@@ -83,14 +93,18 @@ final class HomeViewController: UIViewController, ShoppingListSearchDelegate, UI
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch (type) {
             case .delete:
-                if (controller.fetchedObjects?.count)! <= 1 {
+                if (controller.fetchedObjects?.count)! < 1 {
                     self.tableView.reloadData()
                 } else {
                     self.tableView.deleteRows(at: [indexPath!], with: .automatic)
                 }
                 break
             case .insert:
-                self.tableView.insertRows(at: [newIndexPath!], with: .automatic)
+                if (controller.fetchedObjects?.count)! == 1 {
+                    self.tableView.reloadData()
+                } else {
+                    self.tableView.insertRows(at: [newIndexPath!], with: .automatic)
+                }
                 break
             case .move:
                 break
@@ -241,10 +255,9 @@ final class HomeViewController: UIViewController, ShoppingListSearchDelegate, UI
     // Delegate method called when Shopping List with the same ID is found. Retrieve data and send to viewcontroller
     func foundListWith(dataArray: NSDictionary) {
         if dataArray.count <= 0 {
-            print("No data.")
             return
         }
-        print("Found list with array \(dataArray.count)!")
+        //print("Found list with array \(dataArray.count)!")
         
         for item in dataArray {
             let theitem = item.value as! NSDictionary

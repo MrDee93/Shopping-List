@@ -123,7 +123,7 @@ final class ListController {
                 self.sendNewData(data: itemArray)
             }
             if itemArray.count == 0 {
-                print("No data in list")
+                //print("No data in list")
             }
             self.runningStatus = .Inactive
         })
@@ -150,10 +150,10 @@ final class ListController {
                     }
                 }
                 if listid.compare(listID) == ComparisonResult.orderedSame {
-                    print("Found list.. trying to open")
+                    //print("Found list.. trying to open")
                     if let itemvalue = item.value as? NSDictionary {
                         if itemvalue.count <= 1 {
-                            print("No data.. opening either way")
+                            //print("No data.. opening either way")
                             self.listSearchDelegate?.foundEmptyList()
                             self.listenForUpdates()
                             return
@@ -189,16 +189,21 @@ final class ListController {
 
         }
     }
+    func removeIllegalFromString(_ string:String) -> String {
+        return ((((string.replacingOccurrences(of: ".", with: " ")).replacingOccurrences(of: "$", with: " ")).replacingOccurrences(of: "#", with: " ")).replacingOccurrences(of: "[", with: " ")).replacingOccurrences(of: "]", with: " ")
+    }
     func addItem(item:Item) {
         if listRef != nil {
-            listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
+            let itemName = self.removeIllegalFromString(item.name!) as String
+            listRef?.child("items").child(itemName).setValue(item.getDictionaryData())
         }
     }
     
     
     func updateItemInfo(item:Item) {
         if listRef != nil {
-            listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
+            let itemName = self.removeIllegalFromString(item.name!) as String
+            listRef?.child("items").child(itemName).setValue(item.getDictionaryData())
         }
     }
     
@@ -221,12 +226,12 @@ final class ListController {
     }
     func removeAndReplaceItemWith(item:Item, oldItemName:String) {
         if listRef != nil {
+            let itemName = self.removeIllegalFromString(item.name!) as String
+            
             listRef?.child("items").child(oldItemName).removeValue()
-            listRef?.child("items").child(item.name!).setValue(item.getDictionaryData())
-            //print("Dispatch async")
+            listRef?.child("items").child(itemName).setValue(item.getDictionaryData())
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: { 
                 self.databaseUpdateDelegate?.reloadData()
-                //print("Reload")
             })
         }
     }

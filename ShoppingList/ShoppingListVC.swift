@@ -74,8 +74,14 @@ final class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDa
             appDelegate.addListToDB(name: listname, id: listid)
         }
     }
+    var refreshControl:UIRefreshControl!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        refreshControl = UIRefreshControl()
+        self.tableView.addSubview(refreshControl)
+        refreshControl.addTarget(self, action: #selector(reloadData), for: UIControlEvents.valueChanged)
+        
         
         setupList()
         
@@ -147,7 +153,6 @@ final class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDa
     }
     func createItem(name:String) {
         if arrayOfItems.index(where: {$0.name == name}) != nil {
-            print("ERROR: Item already exists..")
             let alert = UIAlertController(title: "Duplicate item", message: "Item already exists in the list", preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: "Dismiss", style: .destructive, handler: nil))
             self.present(alert, animated: true, completion: nil)
@@ -200,6 +205,11 @@ final class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDa
         return cell.textField.text!
     }
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        textField.resizeText()
+        return true
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ItemTVC
         
@@ -208,16 +218,17 @@ final class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDa
         cell.textField.delegate = self
         cell.textField.inputAccessoryView = self.inputAccessoryViewOfTextField
         
+        /*
         if (indexPath.row == arrayOfItems.count) {
-            cell.textField.placeholder = "Add item"
-            cell.textField.autocorrectionType = .no
-            cell.textField.autocapitalizationType = .sentences
-        }
+            
+        }*/
         if indexPath.row < (arrayOfItems.count) {
             
             let item = arrayOfItems[indexPath.row]
             cell.item = item
             cell.textField.text = item.name
+            cell.textField.resizeText()
+            
             if let purchased = item.purchased {
                 if(purchased) {
                     cell.setTicked()
@@ -262,23 +273,18 @@ final class ShoppingListVC: UIViewController, UITableViewDelegate, UITableViewDa
         self.reloadData()
     }
     func updateListWith(dataArray:[Item]) {
-        //self.view.isUserInteractionEnabled = false
-        //print("Beginning to update DB")
-
         DispatchQueue.global(qos: .userInteractive).async {
             self.arrayOfItems.removeAll()
             self.arrayOfItems = dataArray
-            /*
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }*/
         }
-
-        //self.view.isUserInteractionEnabled = true
-        //print("Completed updating")
     }
-    func reloadData() {
+    
+    @objc func reloadData() {
         self.tableView.reloadData()
+        
+        if refreshControl.isRefreshing {
+            refreshControl.endRefreshing()
+        }
     }
     
     
