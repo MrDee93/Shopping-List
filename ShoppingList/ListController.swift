@@ -153,7 +153,7 @@ final class ListController {
                     //print("Found list.. trying to open")
                     if let itemvalue = item.value as? NSDictionary {
                         if itemvalue.count <= 1 {
-                            //print("No data.. opening either way")
+                                //print("No data.. opening either way")
                             self.listSearchDelegate?.foundEmptyList()
                             self.listenForUpdates()
                             return
